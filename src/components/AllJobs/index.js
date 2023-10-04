@@ -122,6 +122,7 @@ class AllJobs extends Component {
     console.log(responseJobData)
     if (responseJobData === true) {
       const fetchedDataJobs = await responseJobData.json()
+      console.log(fetchedDataJobs.jobs)
       const updatedDataJobs = fetchedDataJobs.jobs.map(eachItem => ({
         companyLogoUrl: eachItem.company_logo_url,
         employmentType: eachItem.employment_type,
@@ -362,7 +363,7 @@ class AllJobs extends Component {
                 <AiOutlineSearch className="search-icon" />
               </button>
             </div>
-            {this.onRenderJobsStatus()}
+            {this.onRenderJobStatus()}
           </div>
         </div>
       </>
