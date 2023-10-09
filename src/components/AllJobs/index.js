@@ -120,7 +120,7 @@ class AllJobs extends Component {
     }
     const responseJobData = await fetch(jobsApiUrl, options)
     console.log(responseJobData)
-    if (responseJobData === true) {
+    if (responseJobData.ok === true) {
       const fetchedDataJobs = await responseJobData.json()
       console.log(fetchedDataJobs.jobs)
       const updatedDataJobs = fetchedDataJobs.jobs.map(eachItem => ({

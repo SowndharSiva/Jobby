@@ -8,7 +8,7 @@ import Header from '../Header'
 import SimilarJobs from '../SimilarJobs'
 import './index.css'
 
-const apiConstantStatus = {
+const apiStatusConstants = {
   initial: 'INITIAL',
   success: 'SUCCESS',
   failure: 'FAILURE',
@@ -19,19 +19,20 @@ class AboutJobItem extends Component {
   state = {
     jobDataDetails: [],
     similarJobsData: [],
-    apiStatus: apiConstantStatus.initial,
+    apiStatus: apiStatusConstants.initial,
   }
 
   componentDidMount() {
     this.getJobData()
   }
 
+  // eslint-disable-next-line no-unused-vars
   getJobData = async props => {
-    const {match} = props
+    const {match} = this.props
     const {params} = match
     const {id} = params
     this.setState({
-      apiStatus: apiConstantStatus.inProgress,
+      apiStatus: apiStatusConstants.inProgress,
     })
     const jwtToken = Cookies.get('jwt_token')
     const jobDetailsApiUrl = `https://apis.ccbp.in/jobs/${id}`
@@ -42,6 +43,7 @@ class AboutJobItem extends Component {
     const responseJobData = await fetch(jobDetailsApiUrl, optionsJobData)
     if (responseJobData.ok === true) {
       const fetchedJobData = await responseJobData.json()
+      console.log(fetchedJobData)
       const updatedJobDetailsData = [fetchedJobData.job_details].map(
         eachItem => ({
           companyLogoUrl: eachItem.company_logo_url,
@@ -75,12 +77,12 @@ class AboutJobItem extends Component {
         }),
       )
       this.setState({
-        apiStatus: apiConstantStatus.success,
         similarJobsData: updatedSimilarJobDetails,
         jobDataDetails: updatedJobDetailsData,
+        apiStatus: apiStatusConstants.success,
       })
     } else {
-      this.setState({apiStatus: apiConstantStatus.failure})
+      this.setState({apiStatus: apiStatusConstants.failure})
     }
   }
 
@@ -213,11 +215,11 @@ class AboutJobItem extends Component {
     const {apiStatus} = this.state
 
     switch (apiStatus) {
-      case apiConstantStatus.success:
+      case apiStatusConstants.success:
         return this.renderJobDetailsSuccessView()
-      case apiConstantStatus.failure:
+      case apiStatusConstants.failure:
         return this.renderJobFailureView()
-      case apiConstantStatus.inProgress:
+      case apiStatusConstants.inProgress:
         return this.renderJobLoadingView()
       default:
         return null
