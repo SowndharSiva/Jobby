@@ -26,6 +26,26 @@ class AboutJobItem extends Component {
     this.getJobData()
   }
 
+  getFormattedData = data => ({
+    companyLogoUrl: data.company_logo_url,
+    companyWebsiteUrl: data.company_website_url,
+    employmentType: data.employment_type,
+    id: data.id,
+    jobDescription: data.job_description,
+    lifeAtCompany: {
+      description: data.life_at_company.description,
+      imageUrl: data.life_at_company.image_url,
+    },
+    location: data.location,
+    title: data.title,
+    rating: data.rating,
+    packagePerAnnum: data.package_per_annum,
+    skills: data.skills.map(eachSkill => ({
+      imageUrl: eachSkill.image_url,
+      name: eachSkill.name,
+    })),
+  })
+
   // eslint-disable-next-line no-unused-vars
   getJobData = async props => {
     const {match} = this.props
@@ -44,26 +64,8 @@ class AboutJobItem extends Component {
     if (responseJobData.ok === true) {
       const fetchedJobData = await responseJobData.json()
       console.log(fetchedJobData)
-      const updatedJobDetailsData = [fetchedJobData.job_details].map(
-        eachItem => ({
-          companyLogoUrl: eachItem.company_logo_url,
-          companyWebsiteUrl: eachItem.company_website_url,
-          employmentType: eachItem.employment_type,
-          id: eachItem.id,
-          jobDescription: eachItem.job_description,
-          lifeAtCompany: {
-            description: eachItem.life_at_company.description,
-            imageUrl: eachItem.life_at_company.image_url,
-          },
-          location: eachItem.location,
-          packagePerAnnum: eachItem.package_per_annum,
-          rating: eachItem.rating,
-          skills: eachItem.skills.map(eachSkill => ({
-            imageUrl: eachSkill.image_url,
-            name: eachSkill.name,
-          })),
-          title: eachItem.title,
-        }),
+      const updatedJobDetailsData = this.getFormattedData(
+        fetchedJobData.job_details,
       )
       const updatedSimilarJobDetails = fetchedJobData.similar_jobs.map(
         eachItem => ({
@@ -88,97 +90,94 @@ class AboutJobItem extends Component {
 
   renderJobDetailsSuccessView = () => {
     const {jobDataDetails, similarJobsData} = this.state
-    if (jobDataDetails.length >= 1) {
-      const {
-        companyLogoUrl,
-        companyWebsiteUrl,
-        employmentType,
-        jobDescription,
-        lifeAtCompany,
-        location,
-        packagePerAnnum,
-        rating,
-        title,
-        skills,
-      } = jobDataDetails[0]
-      return (
-        <>
-          <div className="job-item-container">
-            <div className="first-part-container">
-              <div className="img-title-container">
-                <img
-                  className="company-logo"
-                  src={companyLogoUrl}
-                  alt="job details company logo"
-                />
-                <div className="title-rating-container">
-                  <h1 className="title-heading">{title}</h1>
-                  <div className="star-rating-container">
-                    <AiFillStar className="star-icon" />
-                    <p className="rating-text">{rating}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="location-package-container">
-                <div className="location-job-type-container">
-                  <div className="location-icon-location-container">
-                    <MdLocationOn className="location-icon" />
-                    <p className="location">{location}</p>
-                  </div>
-                  <div className="employment-type-icon-employment-type-container">
-                    <p className="job-type">{employmentType}</p>
-                  </div>
-                </div>
-                <div className="package-container">
-                  <p className="package">{packagePerAnnum}</p>
+    const {
+      companyLogoUrl,
+      companyWebsiteUrl,
+      employmentType,
+      jobDescription,
+      lifeAtCompany,
+      location,
+      packagePerAnnum,
+      rating,
+      title,
+      skills,
+    } = jobDataDetails
+    return (
+      <>
+        <div className="job-item-container">
+          <div className="first-part-container">
+            <div className="img-title-container">
+              <img
+                className="company-logo"
+                src={companyLogoUrl}
+                alt="job details company logo"
+              />
+              <div className="title-rating-container">
+                <h1 className="title-heading">{title}</h1>
+                <div className="star-rating-container">
+                  <AiFillStar className="star-icon" />
+                  <p className="rating-text">{rating}</p>
                 </div>
               </div>
             </div>
-            <hr className="item-hr-line" />
-            <div className="second-part-container">
-              <div className="description-visit-container">
-                <h1 className="description-job-heading">Description</h1>
-                <a className="visit-anchor" href={companyWebsiteUrl}>
-                  Visit <BiLinkExternal />
-                </a>
+            <div className="location-package-container">
+              <div className="location-job-type-container">
+                <div className="location-icon-location-container">
+                  <MdLocationOn className="location-icon" />
+                  <p className="location">{location}</p>
+                </div>
+                <div className="employment-type-icon-employment-type-container">
+                  <p className="job-type">{employmentType}</p>
+                </div>
               </div>
-              <p className="description-para">{jobDescription}</p>
-            </div>
-            <h1>Skills</h1>
-            <ul className="ul-job-details-container">
-              {skills.map(eachItem => (
-                <li className="li-job-details-container" key={eachItem.name}>
-                  <img
-                    src={eachItem.imageUrl}
-                    className="skill-img"
-                    alt={eachItem.name}
-                  />
-                  <p>{eachItem.name}</p>
-                </li>
-              ))}
-            </ul>
-            <div className="company-life-img-container">
-              <div className="life-heading-para-container">
-                <h1>Life at Company</h1>
-                <p>{lifeAtCompany.description}</p>
+              <div className="package-container">
+                <p className="package">{packagePerAnnum}</p>
               </div>
-              <img src={lifeAtCompany.imageUrl} alt="life at company" />
             </div>
           </div>
-          <h1 className="similar-jobs-heading">Similar Jobs</h1>
-          <ul className="similar-jobs-ul-container">
-            {similarJobsData.map(eachItem => (
-              <SimilarJobs
-                key={eachItem.id}
-                similarJobsData={eachItem}
-                employmentType={employmentType}
-              />
+          <hr className="item-hr-line" />
+          <div className="second-part-container">
+            <div className="description-visit-container">
+              <h1 className="description-job-heading">Description</h1>
+              <a className="visit-anchor" href={companyWebsiteUrl}>
+                Visit <BiLinkExternal />
+              </a>
+            </div>
+            <p className="description-para">{jobDescription}</p>
+          </div>
+          <h1>Skills</h1>
+          <ul className="ul-job-details-container">
+            {skills.map(eachItem => (
+              <li className="li-job-details-container" key={eachItem.name}>
+                <img
+                  src={eachItem.imageUrl}
+                  className="skill-img"
+                  alt={eachItem.name}
+                />
+                <p>{eachItem.name}</p>
+              </li>
             ))}
           </ul>
-        </>
-      )
-    }
-    return null
+          <div className="company-life-img-container">
+            <div className="life-heading-para-container">
+              <h1>Life at Company</h1>
+              <p>{lifeAtCompany.description}</p>
+            </div>
+            <img src={lifeAtCompany.imageUrl} alt="life at company" />
+          </div>
+        </div>
+        <h1 className="similar-jobs-heading">Similar Jobs</h1>
+        <ul className="similar-jobs-ul-container">
+          {similarJobsData.map(eachItem => (
+            <SimilarJobs
+              key={eachItem.id}
+              similarJobsData={eachItem}
+              employmentType={employmentType}
+            />
+          ))}
+        </ul>
+      </>
+    )
   }
 
   onRetryJobDetailsAgain = () => {
